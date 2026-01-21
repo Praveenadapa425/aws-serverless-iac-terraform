@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  localstack:
+    container_name: "localstack_main"
+    image: localstack/localstack:latest
+    ports:
+      - "4566:4566"            # LocalStack Gateway
+      - "4510-4559:4510-4559"  # External Service Ports
+    environment:
+      - SERVICES=lambda,dynamodb,apigateway,cloudwatch,iam,s3
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - LAMBDA_EXECUTOR=docker
+      - LAMBDA_REMOTE_DOCKER=false
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./init-localstack.sh:/docker-entrypoint-initaws.d/init-localstack.sh"
+    networks:
+      - serverless-network
+
+networks:
+  serverless-network:
+    driver: bridge
