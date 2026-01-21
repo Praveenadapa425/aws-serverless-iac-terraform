@@ -1,0 +1,317 @@
+Partnr Logo
+Dashboard
+Skill Graph
+Profile
+GPP
+
+Praveen Adapa
+Automate Serverless API Deployment and Observability with AWS Terraform
+Mandatory Task
+
+Back
+Domain
+Backend Development
+Cloud Computing
+DevOps
+Skills
+Bug Tracking
+CD
+Cloud Computing
+DevOps
+Infrastructure as Code Security
+Monitoring
+Observability
+RESTful API Design
+Serverless
+System Design
+aws-cloud
+Difficulty
+Hard
+Tools
+AWS Cloud Services
+Docker
+Git
+LocalStack
+Node.Js
+Postman
+Python
+Terraform
+Industries
+SaaS
+Technology
+Pending Submission
+Please submit your work when ready.
+
+Time Remaining
+
+2d
+
+Deadline: 24 Jan 2026, 06:59 pm
+
+Overview
+Instructions
+Resources
+Submit
+Objective
+Build a robust, production-ready serverless API on AWS using Infrastructure as Code (IaC) with Terraform. This task will challenge you to define and manage all AWS resources (API Gateway, Lambda, DynamoDB, CloudWatch) programmatically, moving beyond manual console configurations. You will focus on creating a secure, observable, and scalable backend service.
+
+By completing this task, you will gain deep, hands-on experience with Terraform for AWS cloud resource provisioning, serverless architectural patterns, and advanced CloudWatch logging, metrics, and alarming. These skills are crucial for any DevOps, Cloud, or Backend Engineer working in modern cloud environments.
+
+This project will equip you with the practical knowledge to build infrastructure that is repeatable, versionable, and auditable, demonstrating proficiency in highly sought-after cloud engineering practices. The goal is to establish a strong foundation for managing complex cloud environments and preparing for roles that demand expertise in automated cloud infrastructure management.
+
+Core Requirements
+All AWS resources (API Gateway, Lambda Function, DynamoDB Table, IAM Roles, CloudWatch Log Groups, and CloudWatch Alarms/Metrics) must be defined and provisioned exclusively via Terraform.
+The API Gateway exposes a RESTful API with at least two distinct endpoints for a simple resource (e.g., POST /items to create an item, GET /items/{id} to retrieve an item).
+A Python (or Node.js) Lambda function handles the business logic for the API endpoints, performing CRUD operations with the DynamoDB table.
+The DynamoDB table is created with a primary key and appropriate attributes suitable for the chosen resource (e.g., itemId as primary key).
+Lambda function logs are captured in CloudWatch Logs, with all key events (API requests, successful operations, errors, processing duration) formatted as structured JSON logs.
+Terraform configuration includes at least two custom CloudWatch metrics for the Lambda function (e.g., InvocationErrors, SuccessfulInvocations, Duration).
+Terraform configuration includes at least one CloudWatch Alarm that triggers when a specified custom metric (e.g., InvocationErrors) crosses a predefined threshold.
+API endpoints return appropriate HTTP status codes (200 OK, 201 Created, 400 Bad Request, 404 Not Found, 500 Internal Server Error) based on the outcome of the operation.
+Input validation is implemented within the Lambda function for the POST /items endpoint to ensure required fields (e.g., name, description) are present and conform to basic types.
+The docker-compose.yml file is provided to set up a local testing/simulation environment for the API infrastructure (e.g., using LocalStack or a similar mock AWS service).
+A comprehensive README.md file is provided, detailing setup, deployment, API documentation (endpoints, request/response examples), and a high-level architecture overview.
+Integration tests (e.g., using a Python script, JavaScript, or Postman collection) are included to verify the functionality and correct responses of all implemented API endpoints.
+Terraform state is managed remotely (e.g., in an S3 bucket with DynamoDB table for locking), configured within the Terraform project.
+IAM roles and policies for the Lambda function are configured with the principle of least privilege, granting only necessary permissions to interact with DynamoDB and CloudWatch.
+Error handling within the Lambda function includes clear, actionable messages for debugging, which are reflected in the structured CloudWatch Logs for 5xx errors.
+Description
+Background
+In modern cloud environments, manual configuration of infrastructure is prone to errors, inconsistency, and is difficult to scale. Infrastructure as Code (IaC) solves these challenges by treating infrastructure definitions like application code—version-controlled, reviewable, and automatable. This task places you in a scenario where you need to build a new serverless API for a rapidly growing tech company. The company emphasizes automation, reliability, and observability, meaning all infrastructure must be defined declaratively and offer comprehensive monitoring capabilities.
+
+You are tasked with building a simple RESTful API (e.g., for managing 'items' or 'products') using AWS serverless technologies: API Gateway for the entry point, AWS Lambda for compute, and DynamoDB for persistent storage. Crucially, the entire infrastructure stack, including logging, metrics, and alarms, must be provisioned and managed using Terraform. This project focuses on demonstrating your ability to deploy and manage cloud resources programmatically, ensuring consistency and enabling quick deployments and rollbacks.
+
+Implementation Guidelines
+Architecture
+Design a serverless architecture comprising AWS API Gateway, AWS Lambda, and AWS DynamoDB. The API Gateway will serve as the entry point, routing requests to the Lambda function. The Lambda function will contain the business logic and interact with DynamoDB for data persistence. All components must be deployed and managed using Terraform modules.
+
+Backend Development
+Your Lambda function should be written in Python (or Node.js, based on your preference). Implement a clear, modular structure for your Lambda code. Focus on robust error handling, input validation, and secure interactions with DynamoDB. Ensure that your Lambda function can parse API Gateway proxy integration events and return responses in the expected format.
+
+Database
+Utilize AWS DynamoDB as your NoSQL database. Design a simple schema for your chosen resource (e.g., items with itemId, name, description, createdAt). Ensure that your DynamoDB table schema, including primary keys and any necessary secondary indexes, is defined via Terraform.
+
+Infrastructure as Code (IaC)
+Terraform is the core tool for this task. Structure your Terraform code logically, using modules for reusable components (e.g., a Lambda module, a DynamoDB module). Ensure your Terraform setup includes remote state management (e.g., S3 backend with DynamoDB locking) for collaborative and secure state handling. Follow Terraform best practices for variable management, outputs, and resource tagging.
+
+Observability and Monitoring
+Leverage AWS CloudWatch to implement comprehensive observability. Configure CloudWatch Log Groups for your Lambda function to capture structured logs. Define custom CloudWatch metrics to track key performance indicators (KPIs) like error rates or invocation counts. Set up CloudWatch Alarms to notify operations when critical thresholds are breached.
+
+Error Handling & Resilience
+Implement robust error handling within your Lambda function, returning appropriate HTTP status codes for API Gateway clients (e.g., 400 for bad input, 404 for not found, 500 for internal server errors). Ensure these errors are logged effectively in CloudWatch Logs, providing sufficient detail for debugging without exposing sensitive information.
+
+Testing
+Include automated integration tests that interact with your deployed API endpoints. These tests should verify correct functionality, input validation, and appropriate error responses. Consider using a tool like Postman, or writing simple scripts in Python or JavaScript, to automate these tests against your deployed API Gateway endpoint.
+
+Implementation Details
+Project Structure
+. 
+├── main.tf                 # Main Terraform configuration for core resources
+├── variables.tf            # Input variables for Terraform configuration
+├── outputs.tf              # Output values from Terraform deployment
+├── versions.tf             # Terraform and provider version constraints
+├── lambda_function/        # Directory for Lambda function code
+│   ├── main.py             # Lambda handler code (or index.js for Node.js)
+│   └── requirements.txt    # Python dependencies (if applicable)
+├── tests/                  # Directory for integration tests
+│   ├── test_api.py         # Python script for API integration tests
+│   └── postman_collection.json # (Optional) Postman collection for testing
+├── docker-compose.yml      # LocalStack or mock AWS setup
+├── .env.example            # Example environment variables
+├── .gitignore              # Git ignore file
+└── README.md               # Project documentation
+#### Phase 1 (Days 1-4): Terraform Setup & Core Serverless API
+#### Step 1.1: Terraform Environment Setup
+Install Terraform CLI and AWS CLI. Configure your AWS credentials (e.g., via aws configure).
+Create main.tf, variables.tf, outputs.tf, and versions.tf files.
+Define the AWS provider in versions.tf and specify required Terraform versions.
+Configure remote state management in main.tf using an S3 backend and DynamoDB table for state locking. For example:
+terraform {
+  backend "s3" {
+    bucket         = "your-terraform-state-bucket"
+    key            = "serverless-api/terraform.tfstate"
+    region         = "us-east-1"
+    encrypt        = true
+    dynamodb_table = "your-terraform-state-lock"
+  }
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+#### Step 1.2: Define DynamoDB Table
+In main.tf, define an aws_dynamodb_table resource for your item data. Ensure a suitable primary key is defined (e.g., id as HASH type).
+Example table definition:
+resource "aws_dynamodb_table" "items_table" {
+  name         = "${var.environment}-items-table"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "itemId"
+  attribute {
+    name = "itemId"
+    type = "S"
+  }
+  tags = {
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+#### Step 1.3: Define Lambda Function and IAM Role
+Create a lambda_function/ directory. Inside, create main.py (or index.js). This will contain a simple Lambda handler for your API endpoints. Start with a basic function that logs the event.
+In main.tf, define an aws_iam_role for the Lambda function with an AssumeRolePolicy for lambda.amazonaws.com. Attach an aws_iam_policy (or use managed policies initially) granting permissions to write to CloudWatch Logs and perform CRUD operations on your DynamoDB table (least privilege).
+Define an aws_lambda_function resource. Point it to your main.py code (packaged as a ZIP file, managed by Terraform's archive_file data source).
+Example Lambda handler signature (Python):
+# lambda_function/main.py
+import json
+import os
+import logging
+# Further imports for DynamoDB
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+def handler(event, context):
+    logger.info(json.dumps(event)) # Structured logging placeholder
+    # Add DynamoDB interaction logic later
+    return {
+        'statusCode': 200,
+        'body': json.dumps({'message': 'Hello from Lambda!'})
+    }
+#### Step 1.4: Define API Gateway
+In main.tf, define aws_api_gateway_rest_api, aws_api_gateway_resource, aws_api_gateway_method, and aws_api_gateway_integration resources to expose your Lambda function via API Gateway.
+Map HTTP methods (e.g., POST for /items, GET for /items/{id}) to your Lambda function.
+Define an aws_api_gateway_deployment and aws_api_gateway_stage to deploy your API.
+Ensure the API Gateway has permissions to invoke your Lambda function (using aws_lambda_permission).
+#### Step 1.5: Implement Core API Logic and Deploy
+Update lambda_function/main.py to handle POST /items (create new item) and GET /items/{id} (retrieve item) using DynamoDB. Implement basic data serialization/deserialization.
+Run terraform init, terraform plan, and terraform apply to deploy your infrastructure.
+Test the deployed API using curl or Postman to verify basic functionality.
+#### Phase 2 (Days 5-8): Advanced Observability & IaC Best Practices
+#### Step 2.1: Structured Logging with CloudWatch
+In main.tf, ensure aws_cloudwatch_log_group is defined for your Lambda function. Set an appropriate retention_in_days.
+Enhance lambda_function/main.py to implement proper structured logging. For every request, log essential information like requestId, path, method, statusCode, and any errors in JSON format. Use Python's logging module and configure it to output JSON.
+Example structured log (Python):
+# In lambda_function/main.py
+import jsonlog # Hypothetical json logging library or custom formatter
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+# Example of a custom formatter for JSON output
+# You might use a library like 'python-json-logger' or implement your own
+# handler.setFormatter(jsonlog.JsonFormatter())
+
+def handler(event, context):
+    request_id = context.aws_request_id
+    path = event.get('path')
+    method = event.get('httpMethod')
+
+    try:
+        # ... processing logic ...
+        logger.info({'message': 'Item created successfully', 'itemId': new_item_id, 'requestId': request_id})
+        return {'statusCode': 201, 'body': json.dumps({'itemId': new_item_id})}
+    except Exception as e:
+        logger.error({'message': 'Failed to create item', 'error': str(e), 'requestId': request_id, 'path': path, 'method': method})
+        return {'statusCode': 500, 'body': json.dumps({'message': 'Internal Server Error'})}
+#### Step 2.2: Custom CloudWatch Metrics and Alarms
+In main.tf, define aws_cloudwatch_metric_alarm resources. Create at least two custom metrics by publishing them from your Lambda function (e.g., counting SuccessfulInvocations, FailedInvocations, or measuring ProcessingTime).
+Configure an aws_cloudwatch_metric_alarm to trigger when a custom metric (e.g., InvocationErrors) exceeds a threshold (e.g., 5 errors in 5 minutes).
+Example alarm definition:
+resource "aws_cloudwatch_metric_alarm" "lambda_error_alarm" {
+  alarm_name          = "${var.environment}-lambda-invocation-error-alarm"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = "1"
+  metric_name         = "Errors"
+  namespace           = "AWS/Lambda"
+  period              = "300"
+  statistic           = "Sum"
+  threshold           = "5"
+  alarm_description   = "This alarm monitors Lambda invocation errors."
+  # Actions could be SNS topic, etc.
+  dimensions = {
+    FunctionName = aws_lambda_function.my_function.function_name
+  }
+}
+#### Step 2.3: Terraform Modules for Reusability
+Refactor your main.tf to use Terraform modules for your Lambda function and DynamoDB table. Create modules/lambda/ and modules/dynamodb/ directories.
+Move relevant aws_lambda_function, aws_iam_role, and aws_dynamodb_table definitions into their respective module directories, exposing necessary inputs and outputs.
+Update main.tf to call these modules.
+#### Phase 3 (Days 9-10): Testing, Documentation, and Refinement
+#### Step 3.1: Integration Testing
+Create a tests/ directory. Develop an integration test script (e.g., tests/test_api.py using requests library for Python or a similar HTTP client library).
+The test script should perform CRUD operations against your deployed API Gateway endpoints and assert on correct HTTP status codes and response bodies.
+Include tests for edge cases, such as invalid input (400) and retrieving a non-existent item (404).
+Ensure your docker-compose.yml can spin up a local environment (e.g., LocalStack) for quick local testing/development against mock AWS services.
+#### Step 3.2: Comprehensive Documentation
+Update README.md to include:
+A clear project overview and architecture diagram (can be text-based or ASCII art).
+Detailed setup instructions for Terraform and local development.
+Instructions on how to deploy and destroy the infrastructure.
+Complete API documentation, including all endpoints, expected request/response payloads, and error codes.
+Explanation of the CloudWatch metrics and alarms implemented.
+Instructions on how to run the integration tests.
+Add comments to your Terraform code and Lambda function for clarity.
+#### Step 3.3: Final Review and Refinement
+Review all Terraform configurations for adherence to best practices, security, and maintainability. Ensure IAM roles follow the principle of least privilege.
+Verify all core requirements are met and test all API endpoints manually and with your automated tests.
+Ensure structured logging is consistently applied and provides actionable insights for debugging.
+Submission Instructions
+Your submission must be a GitHub repository containing the complete source code and all required artifacts.
+
+Mandatory Submission Artifacts:
+Application Code: All Terraform configuration files (.tf), Lambda function code (e.g., lambda_function/main.py), and integration test scripts (tests/).
+README.md: A comprehensive, portfolio-quality README.md that acts as the primary documentation for your project. It must include:
+Project title, description, and objective.
+Clear setup and deployment instructions for the entire infrastructure using Terraform.
+Detailed API documentation (endpoints, methods, request/response bodies, examples).
+Explanation of the CloudWatch metrics and alarms implemented.
+Instructions on how to run local development environment and integration tests.
+A high-level architecture overview (can be a simple diagram or text description).
+Screenshots demonstrating the deployed API functionality, CloudWatch logs, and custom metrics/alarms (optional but highly recommended for human evaluation).
+docker-compose.yml: REQUIRED for setting up a local testing/simulation environment (e.g., LocalStack) for AWS services.
+.env.example: An example file detailing all environment variables required for running your application locally or for deployment, without actual sensitive values.
+Dockerfile(s): If your Lambda function requires specific build environments or local containerization for testing, include relevant Dockerfiles.
+Optional (Bonus) Artifacts:
+ARCHITECTURE.md: A separate document detailing architectural decisions, trade-offs, and scalability considerations.
+Video Demo: A short video demonstrating the functionality of your deployed API and showing the CloudWatch logs, metrics, and alarms in action.
+Evaluation Overview
+Your submission will be thoroughly reviewed to ensure completeness, functionality, code quality, and adherence to best practices. We will perform automated tests against your deployed API endpoints to verify correct functionality and response codes. Your code will be analyzed for its structure, modularity, security considerations, and adherence to Terraform best practices. Expert reviewers will assess your project's overall design, the clarity of your documentation, and the effectiveness of your observability setup. Emphasis will be placed on the correct and idiomatic use of Terraform for IaC and the robustness of your serverless API and monitoring solution.
+
+Common Mistakes To Avoid
+Incomplete Terraform Coverage: Not defining all AWS resources via Terraform (e.g., creating log groups manually).
+Lack of Remote State: Managing Terraform state locally, which is unsuitable for team environments.
+Over-privileged IAM Roles: Granting more permissions than necessary to Lambda functions.
+Missing Structured Logging: Using simple print statements instead of structured (JSON) logging in Lambda.
+Vague CloudWatch Alarms: Alarms that are too broad or too sensitive, leading to alert fatigue or missed critical issues.
+No Input Validation: Exposing API endpoints without proper validation, leading to security vulnerabilities or unexpected behavior.
+Monolithic Terraform: Not using modules to encapsulate reusable infrastructure components.
+Poor Error Handling: Lambda functions returning generic errors or not capturing exceptions effectively.
+Missing Automated Tests: Relying solely on manual testing for API functionality.
+Inadequate Documentation: A README.md that lacks essential setup, deployment, or API usage instructions.
+FAQ
+Q: Can I use a different programming language for Lambda?
+A: While Python is suggested, you may use Node.js or any other language supported by AWS Lambda, provided you include all necessary build artifacts and dependencies.
+Q: Do I need to implement a full CRUD API?
+A: You need to implement at least two distinct endpoints as described in the core requirements (e.g., one for creating, one for retrieving a single item). You are welcome to implement more for a more comprehensive project, but it is not mandatory.
+Q: How should I handle secrets (e.g., database credentials)?
+A: For this task, you can use environment variables passed to Lambda via Terraform. In a real-world scenario, AWS Secrets Manager or Parameter Store would be used.
+Q: Is LocalStack required for local development?
+A: Yes, a docker-compose.yml for local simulation, preferably using LocalStack, is required to demonstrate local development and testing capabilities without incurring AWS costs.
+Q: Should I include an outputs.tf file?
+A: Yes, outputs.tf is required to provide essential information about your deployed resources, such as the API Gateway endpoint URL, Lambda function name, and DynamoDB table name.
+Q: What if I encounter Terraform state corruption?
+A: Always ensure proper remote state configuration with locking. In a real scenario, you'd investigate state backups. For this task, focus on prevention and document your approach.
+Q: Do I need to set up CI/CD pipelines?
+A: While the task focuses on IaC and deployment, implementing a basic CI/CD pipeline (e.g., using GitHub Actions) for Terraform apply is a highly recommended bonus, though not a core requirement.
+Q: How complex should the 'item' resource be?
+A: Keep the resource simple (e.g., itemId, name, description). The complexity lies in the infrastructure automation and observability, not the business logic.
+Partnr Logo
+About Us
+Contact Us
+Privacy Policy
+Terms and Conditions
+All rights reserved. Copyright, Partnr 2025-26
+
+
+Report Issue
