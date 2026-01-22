@@ -100,6 +100,92 @@ def test_api_endpoints(api_base_url):
         print(f"✗ Error during POST /items (invalid): {str(e)}")
         return False
     
+    # Test PUT /items/{id} - Update the created item
+    print(f"\n5. Testing PUT /items/{item_id} endpoint")
+    updated_item_data = {
+        "name": f"Updated Test Item {random.randint(10000, 99999)}",
+        "description": "This is an updated test item",
+        "category": "updated-test",
+        "price": 39.99
+    }
+    
+    try:
+        response = requests.put(f"{api_base_url}/items/{item_id}", json=updated_item_data)
+        print(f"PUT /items/{item_id} Status Code: {response.status_code}")
+        print(f"PUT /items/{item_id} Response: {response.text}")
+        
+        if response.status_code == 200:
+            response_data = response.json()
+            if response_data.get('itemId') == item_id:
+                print(f"✓ Successfully updated item with ID: {item_id}")
+            else:
+                print(f"✗ Updated item ID doesn't match. Expected: {item_id}, Got: {response_data.get('itemId')}")
+                return False
+        else:
+            print(f"✗ Failed to update item. Status: {response.status_code}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"✗ Error during PUT /items/{item_id}: {str(e)}")
+        return False
+    
+    # Test PUT /items/{nonexistent_id} - Try to update a non-existent item
+    print(f"\n6. Testing PUT /items/{fake_id} endpoint (should return 404)")
+    try:
+        response = requests.put(f"{api_base_url}/items/{fake_id}", json=updated_item_data)
+        print(f"PUT /items/{fake_id} Status Code: {response.status_code}")
+        print(f"PUT /items/{fake_id} Response: {response.text}")
+        
+        if response.status_code == 404:
+            print("✓ Correctly returned 404 for non-existent item update")
+        else:
+            print(f"✗ Expected 404, got {response.status_code}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"✗ Error during PUT /items/{fake_id}: {str(e)}")
+        return False
+    
+    # Test DELETE /items/{id} - Delete the created item
+    print(f"\n7. Testing DELETE /items/{item_id} endpoint")
+    
+    try:
+        response = requests.delete(f"{api_base_url}/items/{item_id}")
+        print(f"DELETE /items/{item_id} Status Code: {response.status_code}")
+        print(f"DELETE /items/{item_id} Response: {response.text}")
+        
+        if response.status_code == 200:
+            response_data = response.json()
+            if response_data.get('itemId') == item_id:
+                print(f"✓ Successfully deleted item with ID: {item_id}")
+            else:
+                print(f"✗ Deleted item ID doesn't match. Expected: {item_id}, Got: {response_data.get('itemId')}")
+                return False
+        else:
+            print(f"✗ Failed to delete item. Status: {response.status_code}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"✗ Error during DELETE /items/{item_id}: {str(e)}")
+        return False
+    
+    # Test DELETE /items/{nonexistent_id} - Try to delete a non-existent item
+    print(f"\n8. Testing DELETE /items/{fake_id} endpoint (should return 404)")
+    try:
+        response = requests.delete(f"{api_base_url}/items/{fake_id}")
+        print(f"DELETE /items/{fake_id} Status Code: {response.status_code}")
+        print(f"DELETE /items/{fake_id} Response: {response.text}")
+        
+        if response.status_code == 404:
+            print("✓ Correctly returned 404 for non-existent item deletion")
+        else:
+            print(f"✗ Expected 404, got {response.status_code}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"✗ Error during DELETE /items/{fake_id}: {str(e)}")
+        return False
+    
     print("\n✓ All integration tests passed!")
     return True
 

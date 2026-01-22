@@ -83,7 +83,11 @@ def handler(event, context):
         logger.info(log_event)
         
         # Publish custom metrics
-        publish_custom_metrics(context.function_name, 'SuccessfulInvocations', 1)
+        try:
+            publish_custom_metrics(context.function_name, 'SuccessfulInvocations', 1)
+        except:
+            # Continue even if metrics publishing fails
+            pass
         
         return response
         
@@ -100,7 +104,11 @@ def handler(event, context):
         logger.error(error_log)
         
         # Publish error metric
-        publish_custom_metrics(context.function_name, 'InvocationErrors', 1)
+        try:
+            publish_custom_metrics(context.function_name, 'InvocationErrors', 1)
+        except:
+            # Continue even if metrics publishing fails
+            pass
         
         return {
             'statusCode': 500,
@@ -186,7 +194,11 @@ def handle_create_item(body, request_id):
         processing_time = (time.time() - start_time) * 1000  # Convert to milliseconds
         
         # Publish processing time metric
-        publish_custom_metrics(context.function_name, 'ProcessingTime', processing_time)
+        try:
+            publish_custom_metrics(context.function_name, 'ProcessingTime', processing_time)
+        except:
+            # Continue even if metrics publishing fails
+            pass
         
         return {
             'statusCode': 201,

@@ -186,6 +186,21 @@ Update an existing item.
 }
 ```
 
+**Success Response Example:**
+```json
+{
+  "itemId": "abc123-4567-8901-def2",
+  "message": "Item updated successfully"
+}
+```
+
+**Error Response Example (404):**
+```json
+{
+  "error": "Item not found"
+}
+```
+
 **Status Codes:**
 - `200 OK`: Item updated successfully
 - `400 Bad Request`: Invalid input data
@@ -199,6 +214,21 @@ Delete an item by ID.
 {
   "itemId": "uuid-string",
   "message": "Item deleted successfully"
+}
+```
+
+**Success Response Example:**
+```json
+{
+  "itemId": "abc123-4567-8901-def2",
+  "message": "Item deleted successfully"
+}
+```
+
+**Error Response Example (404):**
+```json
+{
+  "error": "Item not found"
 }
 ```
 
