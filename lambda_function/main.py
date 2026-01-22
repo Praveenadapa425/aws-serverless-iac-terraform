@@ -13,7 +13,7 @@ logger.setLevel(logging.INFO)
 
 # Initialize DynamoDB client
 dynamodb = boto3.resource('dynamodb')
-table_name = os.environ.get('DYNAMODB_TABLE_NAME', '').split('/')[-1]  # Extract table name from ARN
+table_name = os.environ.get('DYNAMODB_TABLE_NAME', '')
 table = dynamodb.Table(table_name)
 
 def handler(event, context):
@@ -52,6 +52,12 @@ def handler(event, context):
         elif http_method == 'GET' and '/items/' in path:
             item_id = path_parameters.get('id') or path.split('/')[-1]
             response = handle_get_item(item_id, request_id)
+        elif http_method == 'PUT' and '/items/' in path:
+            item_id = path_parameters.get('id') or path.split('/')[-1]
+            response = handle_update_item(item_id, body, request_id)
+        elif http_method == 'DELETE' and '/items/' in path:
+            item_id = path_parameters.get('id') or path.split('/')[-1]
+            response = handle_delete_item(item_id, request_id)
         else:
             # Unsupported route
             error_msg = f'Unsupported route: {http_method} {path}'
@@ -288,6 +294,199 @@ def handle_get_item(item_id, request_id):
                 'Access-Control-Allow-Origin': '*'
             },
             'body': json.dumps({'error': 'Failed to retrieve item'})
+        }
+
+def handle_update_item(item_id, body, request_id):
+    """
+    Handle PUT /items/{id} to update an item
+    """
+    if not item_id:
+        validation_error = {
+            'message': 'Item ID is required for update',
+            'requestId': request_id
+        }
+        logger.warning(validation_error)
+        return {
+            'statusCode': 400,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            'body': json.dumps({'error': 'Item ID is required for update'})
+        }
+    
+    if not body or not isinstance(body, dict):
+        validation_error = {
+            'message': 'Invalid input: body must be a JSON object',
+            'requestId': request_id
+        }
+        logger.warning(validation_error)
+        return {
+            'statusCode': 400,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            'body': json.dumps({'error': 'Invalid input: body must be a JSON object'})
+        }
+    
+    try:
+        # Check if item exists
+        existing_item = table.get_item(Key={'itemId': item_id})
+        
+        if 'Item' not in existing_item:
+            not_found_log = {
+                'message': 'Item not found for update',
+                'requestId': request_id,
+                'itemId': item_id,
+                'timestamp': datetime.utcnow().isoformat()
+            }
+            logger.info(not_found_log)
+            
+            return {
+                'statusCode': 404,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'body': json.dumps({'error': 'Item not found'})
+            }
+        
+        # Prepare update expression
+        update_expression = "SET updatedAt = :updated_at"
+        expression_values = {':updated_at': int(time.time())}
+        
+        # Add fields to update
+        for key, value in body.items():
+            if key not in ['itemId', 'createdAt']:  # Don't allow updating these fields
+                update_expression += f", {key} = :{key}"
+                expression_values[f':{key}'] = value
+        
+        # Update item in DynamoDB
+        table.update_item(
+            Key={'itemId': item_id},
+            UpdateExpression=update_expression,
+            ExpressionAttributeValues=expression_values
+        )
+        
+        # Log successful update
+        success_log = {
+            'message': 'Item updated successfully',
+            'requestId': request_id,
+            'itemId': item_id,
+            'timestamp': datetime.utcnow().isoformat()
+        }
+        logger.info(success_log)
+        
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            'body': json.dumps({
+                'itemId': item_id,
+                'message': 'Item updated successfully'
+            })
+        }
+    except ClientError as e:
+        error_log = {
+            'message': 'Failed to update item in DynamoDB',
+            'requestId': request_id,
+            'error': str(e),
+            'itemId': item_id
+        }
+        logger.error(error_log)
+        
+        return {
+            'statusCode': 500,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            'body': json.dumps({'error': 'Failed to update item'})
+        }
+
+def handle_delete_item(item_id, request_id):
+    """
+    Handle DELETE /items/{id} to delete an item
+    """
+    if not item_id:
+        validation_error = {
+            'message': 'Item ID is required for deletion',
+            'requestId': request_id
+        }
+        logger.warning(validation_error)
+        return {
+            'statusCode': 400,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            'body': json.dumps({'error': 'Item ID is required for deletion'})
+        }
+    
+    try:
+        # Check if item exists
+        existing_item = table.get_item(Key={'itemId': item_id})
+        
+        if 'Item' not in existing_item:
+            not_found_log = {
+                'message': 'Item not found for deletion',
+                'requestId': request_id,
+                'itemId': item_id,
+                'timestamp': datetime.utcnow().isoformat()
+            }
+            logger.info(not_found_log)
+            
+            return {
+                'statusCode': 404,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'body': json.dumps({'error': 'Item not found'})
+            }
+        
+        # Delete item from DynamoDB
+        table.delete_item(Key={'itemId': item_id})
+        
+        # Log successful deletion
+        success_log = {
+            'message': 'Item deleted successfully',
+            'requestId': request_id,
+            'itemId': item_id,
+            'timestamp': datetime.utcnow().isoformat()
+        }
+        logger.info(success_log)
+        
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            'body': json.dumps({
+                'itemId': item_id,
+                'message': 'Item deleted successfully'
+            })
+        }
+    except ClientError as e:
+        error_log = {
+            'message': 'Failed to delete item from DynamoDB',
+            'requestId': request_id,
+            'error': str(e),
+            'itemId': item_id
+        }
+        logger.error(error_log)
+        
+        return {
+            'statusCode': 500,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            'body': json.dumps({'error': 'Failed to delete item'})
         }
 
 def publish_custom_metrics(function_name, metric_name, value):

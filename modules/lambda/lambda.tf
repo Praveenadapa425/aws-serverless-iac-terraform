@@ -82,7 +82,7 @@ resource "aws_lambda_function" "items_handler" {
 
   environment {
     variables = {
-      DYNAMODB_TABLE_NAME = var.dynamodb_table_arn
+      DYNAMODB_TABLE_NAME = var.dynamodb_table_name
     }
   }
 
