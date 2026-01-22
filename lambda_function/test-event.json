@@ -1,0 +1,1 @@
+{"httpMethod":"POST","path":"/items","body":"{\"name\":\"Test Item\",\"description\":\"Test Description\"}"} 
